@@ -1,0 +1,44 @@
+<svg width="1200" height="560" viewBox="0 0 1200 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="560" rx="28" fill="#F5F1E8"/>
+  <rect x="54" y="54" width="1092" height="452" rx="24" fill="#FFFDF9" stroke="#D9D0C1" stroke-width="2"/>
+  <text x="80" y="115" fill="#1E293B" font-family="Helvetica, Arial, sans-serif" font-size="34" font-weight="700">Layered Architecture Overview</text>
+  <text x="80" y="150" fill="#475569" font-family="Helvetica, Arial, sans-serif" font-size="20">Production-style separation between API, application logic, persistence, and domain model.</text>
+
+  <rect x="82" y="198" width="236" height="204" rx="22" fill="#17324D"/>
+  <text x="108" y="246" fill="#F8FAFC" font-family="Helvetica, Arial, sans-serif" font-size="28" font-weight="700">API</text>
+  <text x="108" y="284" fill="#D8E4F0" font-family="Helvetica, Arial, sans-serif" font-size="18">Controllers</text>
+  <text x="108" y="314" fill="#D8E4F0" font-family="Helvetica, Arial, sans-serif" font-size="18">JWT / Swagger</text>
+  <text x="108" y="344" fill="#D8E4F0" font-family="Helvetica, Arial, sans-serif" font-size="18">Validation Filter</text>
+  <text x="108" y="374" fill="#D8E4F0" font-family="Helvetica, Arial, sans-serif" font-size="18">Exception Middleware</text>
+
+  <rect x="352" y="198" width="236" height="204" rx="22" fill="#B45309"/>
+  <text x="378" y="246" fill="#FFF7ED" font-family="Helvetica, Arial, sans-serif" font-size="28" font-weight="700">Application</text>
+  <text x="378" y="284" fill="#FFEDD5" font-family="Helvetica, Arial, sans-serif" font-size="18">DTOs</text>
+  <text x="378" y="314" fill="#FFEDD5" font-family="Helvetica, Arial, sans-serif" font-size="18">Service Contracts</text>
+  <text x="378" y="344" fill="#FFEDD5" font-family="Helvetica, Arial, sans-serif" font-size="18">Validation Rules</text>
+  <text x="378" y="374" fill="#FFEDD5" font-family="Helvetica, Arial, sans-serif" font-size="18">Exceptions / Paging</text>
+
+  <rect x="622" y="198" width="236" height="204" rx="22" fill="#166534"/>
+  <text x="648" y="246" fill="#F0FDF4" font-family="Helvetica, Arial, sans-serif" font-size="28" font-weight="700">Persistence</text>
+  <text x="648" y="284" fill="#DCFCE7" font-family="Helvetica, Arial, sans-serif" font-size="18">EF Core DbContext</text>
+  <text x="648" y="314" fill="#DCFCE7" font-family="Helvetica, Arial, sans-serif" font-size="18">Auth / Product Services</text>
+  <text x="648" y="344" fill="#DCFCE7" font-family="Helvetica, Arial, sans-serif" font-size="18">Migrations / Seed Data</text>
+  <text x="648" y="374" fill="#DCFCE7" font-family="Helvetica, Arial, sans-serif" font-size="18">SQL Server Integration</text>
+
+  <rect x="892" y="198" width="236" height="204" rx="22" fill="#7C2D12"/>
+  <text x="918" y="246" fill="#FFF7ED" font-family="Helvetica, Arial, sans-serif" font-size="28" font-weight="700">Domain</text>
+  <text x="918" y="284" fill="#FFEDD5" font-family="Helvetica, Arial, sans-serif" font-size="18">Entities</text>
+  <text x="918" y="314" fill="#FFEDD5" font-family="Helvetica, Arial, sans-serif" font-size="18">Relationships</text>
+  <text x="918" y="344" fill="#FFEDD5" font-family="Helvetica, Arial, sans-serif" font-size="18">Enums</text>
+  <text x="918" y="374" fill="#FFEDD5" font-family="Helvetica, Arial, sans-serif" font-size="18">Core Model</text>
+
+  <path d="M318 300H352" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+  <path d="M588 300H622" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+  <path d="M858 300H892" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+
+  <circle cx="335" cy="300" r="8" fill="#334155"/>
+  <circle cx="605" cy="300" r="8" fill="#334155"/>
+  <circle cx="875" cy="300" r="8" fill="#334155"/>
+
+  <text x="80" y="458" fill="#64748B" font-family="Helvetica, Arial, sans-serif" font-size="18">Request flow: API → Application contracts → Persistence implementations → Domain model</text>
+</svg>

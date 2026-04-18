@@ -29,14 +29,30 @@ The solution is split into four projects:
 - `ECommerceAPI.Persistence`: `DbContext`, EF Core configuration, service implementations, seed data
 - `ECommerceAPI.Domain`: entities and enums
 
-```mermaid
-flowchart LR
-    A["ECommerceAPI.API"] --> B["ECommerceAPI.Application"]
-    A --> C["ECommerceAPI.Persistence"]
-    B --> D["ECommerceAPI.Domain"]
-    C --> B
-    C --> D
+![Architecture Overview](docs/assets/architecture-overview.svg)
+
+## Project Structure
+
+```text
+ECommerceAPI.API
+ECommerceAPI.Application
+ECommerceAPI.Persistence
+ECommerceAPI.Domain
+docs/assets
 ```
+
+- `ECommerceAPI.API`: HTTP layer, authentication setup, Swagger, middleware, filters
+- `ECommerceAPI.Application`: use-case contracts, DTOs, validation rules, shared exceptions
+- `ECommerceAPI.Persistence`: EF Core, SQL Server access, token handling, service implementations, migrations
+- `ECommerceAPI.Domain`: core entities such as `User`, `Product`, `Cart`, `Order`, and supporting enums
+
+## Security
+
+- JWT bearer authentication for protected endpoints
+- Refresh token flow with token revocation support
+- Role-based authorization for `Admin` and `Customer`
+- Password hashing via ASP.NET Core `PasswordHasher`
+- Centralized validation and exception handling to reduce inconsistent controller logic
 
 ## Main Endpoints
 
@@ -89,7 +105,6 @@ flowchart LR
 - SQL Server
 - JWT Bearer Authentication
 - FluentValidation
-- AutoMapper
 - Serilog
 - Swagger / OpenAPI
 - Docker
