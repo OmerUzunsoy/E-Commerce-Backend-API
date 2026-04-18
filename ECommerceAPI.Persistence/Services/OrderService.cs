@@ -61,17 +61,21 @@ public sealed class OrderService(ECommerceDbContext context) : IOrderService
 
     public async Task<IReadOnlyCollection<OrderDto>> GetMyOrdersAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        return await QueryOrders()
+        var orders = await QueryOrders()
             .Where(x => x.UserId == userId)
             .OrderByDescending(x => x.CreatedAtUtc)
             .ToListAsync(cancellationToken);
+
+        return orders.Select(MapOrder).ToList();
     }
 
     public async Task<IReadOnlyCollection<OrderDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await QueryOrders()
+        var orders = await QueryOrders()
             .OrderByDescending(x => x.CreatedAtUtc)
             .ToListAsync(cancellationToken);
+
+        return orders.Select(MapOrder).ToList();
     }
 
     public async Task<OrderDto> UpdateStatusAsync(Guid orderId, UpdateOrderStatusRequestDto request, CancellationToken cancellationToken = default)
@@ -87,29 +91,33 @@ public sealed class OrderService(ECommerceDbContext context) : IOrderService
 
     private async Task<OrderDto> GetOrderByIdAsync(Guid orderId, CancellationToken cancellationToken)
     {
-        return await QueryOrders()
+        var order = await QueryOrders()
             .FirstAsync(x => x.Id == orderId, cancellationToken);
+
+        return MapOrder(order);
     }
 
-    private IQueryable<OrderDto> QueryOrders()
+    private IQueryable<Order> QueryOrders()
     {
         return context.Orders
             .Include(x => x.User)
             .Include(x => x.Items)
-            .ThenInclude(x => x.Product)
-            .Select(x => new OrderDto(
-                x.Id,
-                x.UserId,
-                x.User!.FullName,
-                x.TotalAmount,
-                x.Status,
-                x.CreatedAtUtc,
-                x.Items.Select(item => new OrderItemDto(
-                    item.Id,
-                    item.ProductId,
-                    item.Product!.Name,
-                    item.Quantity,
-                    item.UnitPrice,
-                    item.UnitPrice * item.Quantity)).ToList()));
+            .ThenInclude(x => x.Product);
     }
+
+    private static OrderDto MapOrder(Order order) =>
+        new(
+            order.Id,
+            order.UserId,
+            order.User!.FullName,
+            order.TotalAmount,
+            order.Status,
+            order.CreatedAtUtc,
+            order.Items.Select(item => new OrderItemDto(
+                item.Id,
+                item.ProductId,
+                item.Product!.Name,
+                item.Quantity,
+                item.UnitPrice,
+                item.UnitPrice * item.Quantity)).ToList());
 }

@@ -7,9 +7,11 @@ services:
       - "8080:8080"
     depends_on:
       - sqlserver
+      - redis
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=ECommerceDb;User Id=sa;Password=Your_strong_password123;TrustServerCertificate=True
+      ConnectionStrings__Redis: redis:6379
       Jwt__Issuer: ECommerceAPI
       Jwt__Audience: ECommerceAPI.Client
       Jwt__SecretKey: super-secret-development-key-with-at-least-32-chars
@@ -24,6 +26,12 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecommerce-redis
+    ports:
+      - "6379:6379"
 
 volumes:
   sqlserver_data:

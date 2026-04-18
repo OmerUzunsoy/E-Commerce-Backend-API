@@ -13,10 +13,12 @@ This project simulates a real-world e-commerce backend rather than a tutorial-le
 - User profile and admin user management endpoints
 - Category and product management for admin workflows
 - Product listing with pagination, filtering, and sorting
+- Redis-backed caching for category list, product list, and product detail endpoints
 - Cart operations and order creation from cart items
 - Global exception handling middleware
 - FluentValidation-based request validation
 - Serilog request and error logging
+- xUnit-based test coverage for auth, product, order, and validation flows
 - SQL Server + Entity Framework Core
 - Dockerfile and `docker-compose` setup
 
@@ -53,6 +55,21 @@ docs/assets
 - Role-based authorization for `Admin` and `Customer`
 - Password hashing via ASP.NET Core `PasswordHasher`
 - Centralized validation and exception handling to reduce inconsistent controller logic
+
+## Caching
+
+Redis cache is applied to these read-heavy endpoints:
+
+- `GET /api/categories`
+- `GET /api/products`
+- `GET /api/products/{id}`
+
+Cache behavior:
+
+- Product list cache TTL: `5` minutes
+- Product detail cache TTL: `5` minutes
+- Category list cache TTL: `10` minutes
+- Product and category mutations invalidate cache via versioned cache keys
 
 ## Main Endpoints
 
@@ -103,11 +120,15 @@ docs/assets
 - ASP.NET Core Web API (.NET 9)
 - Entity Framework Core
 - SQL Server
+- Redis
 - JWT Bearer Authentication
 - FluentValidation
 - Serilog
 - Swagger / OpenAPI
 - Docker
+- xUnit
+- Moq
+- FluentAssertions
 
 ## Running Locally
 
@@ -118,6 +139,7 @@ docker compose up --build
 ```
 
 API will be available at `http://localhost:8080/swagger`.
+SQL Server and Redis are started alongside the API container.
 
 ### Option 2: Local SQL Server
 
@@ -190,6 +212,22 @@ curl -X POST http://localhost:8080/api/products \
     "stock": 12,
     "categoryId": "<category-id>"
   }'
+```
+
+## Testing
+
+The solution includes service and validator coverage for:
+
+- Auth login success and failure scenarios
+- Refresh token validation
+- Product creation and filtering logic
+- Order creation edge cases and total calculation
+- Request validation rules
+
+Run the full test suite with:
+
+```bash
+dotnet test
 ```
 
 ## Design Notes

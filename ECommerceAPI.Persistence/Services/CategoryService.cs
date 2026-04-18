@@ -1,19 +1,34 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using ECommerceAPI.Application.Abstractions.Caching;
 using ECommerceAPI.Application.Abstractions.Services;
 using ECommerceAPI.Application.Common.Exceptions;
 using ECommerceAPI.Application.DTOs;
 using ECommerceAPI.Application.Mappings;
+using ECommerceAPI.Application.Options;
 using ECommerceAPI.Domain.Entities;
+using ECommerceAPI.Persistence.Caching;
 using ECommerceAPI.Persistence.Context;
 
 namespace ECommerceAPI.Persistence.Services;
 
-public sealed class CategoryService(ECommerceDbContext context) : ICategoryService
+public sealed class CategoryService(
+    ECommerceDbContext context,
+    ICacheService cacheService,
+    IOptions<CacheOptions> cacheOptions) : ICategoryService
 {
     public async Task<IReadOnlyCollection<CategoryDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var categories = await context.Categories.OrderBy(x => x.Name).ToListAsync(cancellationToken);
-        return categories.Select(x => x.ToDto()).ToList();
+        var version = await cacheService.GetVersionAsync("categories", cancellationToken);
+        return await cacheService.GetOrCreateAsync(
+            CacheKeys.CategoryList(version),
+            TimeSpan.FromMinutes(cacheOptions.Value.CategoryTtlMinutes),
+            async token =>
+            {
+                var categories = await context.Categories.OrderBy(x => x.Name).ToListAsync(token);
+                return (IReadOnlyCollection<CategoryDto>)categories.Select(x => x.ToDto()).ToList();
+            },
+            cancellationToken);
     }
 
     public async Task<CategoryDto> CreateAsync(CreateCategoryRequestDto request, CancellationToken cancellationToken = default)
@@ -32,6 +47,8 @@ public sealed class CategoryService(ECommerceDbContext context) : ICategoryServi
 
         context.Categories.Add(category);
         await context.SaveChangesAsync(cancellationToken);
+        await cacheService.IncrementVersionAsync("categories", cancellationToken);
+        await cacheService.IncrementVersionAsync("products", cancellationToken);
 
         return category.ToDto();
     }
@@ -44,6 +61,8 @@ public sealed class CategoryService(ECommerceDbContext context) : ICategoryServi
         category.Name = request.Name.Trim();
         category.Description = request.Description.Trim();
         await context.SaveChangesAsync(cancellationToken);
+        await cacheService.IncrementVersionAsync("categories", cancellationToken);
+        await cacheService.IncrementVersionAsync("products", cancellationToken);
 
         return category.ToDto();
     }
@@ -60,5 +79,7 @@ public sealed class CategoryService(ECommerceDbContext context) : ICategoryServi
 
         context.Categories.Remove(category);
         await context.SaveChangesAsync(cancellationToken);
+        await cacheService.IncrementVersionAsync("categories", cancellationToken);
+        await cacheService.IncrementVersionAsync("products", cancellationToken);
     }
 }
